@@ -39,6 +39,24 @@ an example that will spawn 20 `SleepTask` with 20 seconds of ttl is with the fol
 StressTest.perform(20, 20)
 ```
 
+### What's Horde?
+
+Horde is a distributed supervisor and a distributed registry. Horde was inspired very heavily by Swarm and built to address some perceived shortcomings of Swarm’s design.
+
+You should use Horde when you want a global supervisor (or global registry, or some combination of the two) that supports automatic fail-over, dynamic cluster membership, and graceful node shutdown.
+
+### Features and differences between Horde and Swarm
+
+Horde mirrors the API of Elixir’s Supervisor and Registry as much as possible, and in fact it runs its own Supervisor per node, distributing processes among the cluster’s nodes using a simple hash function (ala Swarm).
+
+Aside from some additional code to glue together supervisors into a distributed supervisor, Horde should be a drop-in replacement for Elixir’s Supervisor or Registry.
+
+While Swarm’s global process registry blurs the line between a registry and a supervisor (for example, using `register_name/5`, Swarm will start and restart a process for you, but not otherwise supervise your process), Horde maintains a strict separation of supervisor from registry.
+
+This is the biggest difference between Swarm and Horde and resolves some problems stemming from Swarm’s blurring of these concepts.
+
+Thus, Horde provides both Horde.Supervisor and Horde.Registry
+
 ### How to send message to the supervised processes by horde??
 
 At some point you’re going to start multiple processes under a distributed supervisor, and you’ll want to communicate with them. The question is: how? 
@@ -86,3 +104,6 @@ One of the best things about Horde is that its Supervisor and Registry both func
 
 Horde.Supervisor and Horde.Registry are just two new tools in your OTP toolbox.
 
+### what's behind the scenes?
+
+Horde is built on delta-CRDTs. CRDTs (conflict-free replicated data types) are guaranteed to converge (eventually, but Horde communicates aggressively to keep divergences to a minimum)

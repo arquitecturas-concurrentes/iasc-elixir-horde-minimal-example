@@ -38,3 +38,51 @@ an example that will spawn 20 `SleepTask` with 20 seconds of ttl is with the fol
 ```elixir
 StressTest.perform(20, 20)
 ```
+
+### How to send message to the supervised processes by horde??
+
+At some point you’re going to start multiple processes under a distributed supervisor, and you’ll want to communicate with them. The question is: how? 
+
+With a normal application, you would name your processes (which is called “registering” them), and then refer to them by that name.
+
+For the example we have on this minimal example it'd be something like:
+
+```elixir
+GenServer.call(IascElixirHordeMinimalExample.PongWorker, :ping)
+```
+
+But this mechanism is scoped to a single node. If you know where a process is running, then you can just pass the node where this process is currently in an extra argument:
+
+```elixir
+GenServer.call({IascElixirHordeMinimalExample.PongWorker, node}, :ping)
+```
+
+But the main issue lies on that we need to know where Horde is going to spawn our `PongWorker` process, also, Horde starts the new process on a random node, o how can you know which node your process is running on to address it with `{name, node}`? The answer is: we need to use `Horde.Registry`.
+
+`Horde.Registry` is a distributed process registry. That means that you can register a process with it, and then access that process from any location in your cluster.
+
+There are a couple of ways you can do this. 
+
+For example, you can call `Horde.Registry.register(registry, :foo)` from within a process (eg, the init/1 callback of a GenServer) to register it. The pid of this process can then be found by calling 
+
+```elixir
+Horde.Registry.lookup(registry, :foo)
+```
+
+from any node in the cluster. This will work, but there is a nicer approach. We just can use the `via_tuple` in order to get a tuple that will be used to know exactly the process is found and then just call it, once we have its id, it's going to be as calling a process on the cluster. 
+
+```elixir
+tuple = IascElixirHordeMinimalExample.PongWorker.Starter.via_tuple(PongWorker)
+# {:via, Horde.Registry, {IascElixirHordeMinimalExample.HordeRegistry, PongWorker}}
+pid = GenServer.whereis(tuple)
+GenServer.call(pid, :ping)
+```
+
+#### OTP and Horde
+
+One of the best things about Horde is that its Supervisor and Registry both function as OTP building blocks in a way you’re familiar with. This means that common OTP patterns can be utilized with Horde to build distributed supervision trees of arbitrary complexity combined with distributed registries. I’ve included a supervision tree diagram here for illustration.
+
+![](/img/diagram.jpg)
+
+Horde.Supervisor and Horde.Registry are just two new tools in your OTP toolbox.
+

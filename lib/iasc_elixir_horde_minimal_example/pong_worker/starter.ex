@@ -41,7 +41,7 @@ defmodule IascElixirHordeMinimalExample.PongWorker.Starter do
     |> GenServer.whereis()
   end
 
-  defp via_tuple(name) do
+  def via_tuple(name) do
     {:via, Horde.Registry, {HordeRegistry, name}}
   end
 end

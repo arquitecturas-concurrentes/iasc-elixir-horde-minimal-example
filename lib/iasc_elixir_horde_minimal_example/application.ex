@@ -8,7 +8,7 @@ defmodule IascElixirHordeMinimalExample.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Cluster.Supervisor, [topologies(), [name: BackgroundJob.ClusterSupervisor]]},
+      {Cluster.Supervisor, [topologies(), [name: MinimalExample.ClusterSupervisor]]},
       IascElixirHordeMinimalExample.HordeRegistry,
       IascElixirHordeMinimalExample.HordeSupervisor,
       IascElixirHordeMinimalExample.NodeObserver.Supervisor,

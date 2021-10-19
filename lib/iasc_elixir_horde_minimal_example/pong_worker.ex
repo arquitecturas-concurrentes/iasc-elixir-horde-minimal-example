@@ -41,14 +41,18 @@ defmodule IascElixirHordeMinimalExample.PongWorker do
     {:noreply, timeout}
   end
 
+  # --- Client functions ---
+  
+  def ping do
+    GenServer.call(__MODULE__, :ping)
+  end
+
+  # --- Private functions ---
+
   defp schedule_task(timeout) do
     log("scheduling for #{timeout}ms")
 
     Process.send_after(self(), :execute, timeout)
-  end
-
-  defp ping do
-    GenServer.call(__MODULE__, :ping)
   end
 
   defp log(text) do

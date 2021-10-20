@@ -5,7 +5,8 @@ defmodule IascElixirHordeMinimalExample.PongWorker.Starter do
   """
   require Logger
 
-  alias IascElixirHordeMinimalExample.{PongWorker, HordeRegistry, HordeSupervisor}
+  alias CustomIASC.{HordeRegistry, HordeSupervisor}
+  alias IascElixirHordeMinimalExample.{PongWorker}
 
   def child_spec(opts) do
     %{

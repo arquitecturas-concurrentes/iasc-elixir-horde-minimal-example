@@ -1,8 +1,8 @@
-defmodule IascElixirHordeMinimalExample.NodeObserver do
+defmodule CustomIASC.NodeObserver do
   use GenServer
   require Logger
 
-  alias IascElixirHordeMinimalExample.{HordeRegistry, HordeSupervisor}
+  alias CustomIASC.{HordeRegistry, HordeSupervisor}
 
   def start_link(_)do
     GenServer.start_link(__MODULE__, %{})

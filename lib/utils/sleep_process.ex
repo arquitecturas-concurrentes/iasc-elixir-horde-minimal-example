@@ -5,7 +5,7 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
   use GenServer
   require Logger
 
-  alias IascElixirHordeMinimalExample.{HordeRegistry}
+  alias CustomIASC.{HordeRegistry}
 
   def child_spec(id, seconds_to_sleep) do
     %{

@@ -1,4 +1,4 @@
-defmodule IascElixirHordeMinimalExample.NodeObserver.Supervisor do
+defmodule CustomIASC.NodeObserver.Supervisor do
  use Supervisor
 
  def start_link(init_arg) do
@@ -7,7 +7,7 @@ end
 
 def init(_init_arg) do
   children = [
-    {IascElixirHordeMinimalExample.NodeObserver, []}
+    {CustomIASC.NodeObserver, []}
   ]
 
   Supervisor.init(children, strategy: :one_for_one)

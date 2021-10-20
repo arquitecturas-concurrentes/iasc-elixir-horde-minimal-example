@@ -5,7 +5,8 @@ defmodule StressTest do
   use GenServer
   require Logger
 
-  alias IascElixirHordeMinimalExample.{SleepProcess, HordeSupervisor}
+  alias CustomIASC.{HordeSupervisor}
+  alias IascElixirHordeMinimalExample.{SleepProcess}
 
   @doc """
 

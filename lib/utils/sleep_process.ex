@@ -40,8 +40,7 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
   @impl GenServer
   def handle_info(:terminate, {id, timeout}) do
     Logger.info("process #{id} Finishing.")
-    {:noreply, {id, timeout}}
-    #{:stop, :normal, {id, timeout}}
+    {:stop, :normal, {id, timeout}}
   end
 
   def whereis_identifier(id) do
@@ -64,11 +63,9 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
 
     Logger.info("#{__MODULE__} #{inspect(self())} - Starting to sleep.")
 
-    #Process.sleep(seconds_to_sleep * 1000)
+    Process.sleep(seconds_to_sleep * 1000)
   
     Logger.info("#{__MODULE__} #{inspect(self())} - Generating Random number ->> #{random}.")
-
-    Process.send_after(self(), :terminate, seconds_to_sleep)
   end
 
   defp get_process_name_from_number(id) do

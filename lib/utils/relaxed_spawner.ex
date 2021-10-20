@@ -15,6 +15,15 @@ defmodule RelaxedProcessesSpawner do
     start_link({number, seconds_to_live})
   end
 
+  def stop(number) do
+    for x <- 0..number do 
+      pid = IascElixirHordeMinimalExample.SleepProcess.whereis_identifier(x)
+      if pid do
+        send(pid, :terminate)
+      end
+    end
+  end
+
   def start_link({number, seconds_to_live}) do
     GenServer.start_link(__MODULE__, {number, seconds_to_live})
   end
@@ -47,3 +56,4 @@ defmodule RelaxedProcessesSpawner do
 end
 
 # RelaxedProcessesSpawner.perform(20,2)
+# RelaxedProcessesSpawner.stop(20)

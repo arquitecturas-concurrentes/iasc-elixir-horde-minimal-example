@@ -1,4 +1,4 @@
-defmodule StressTest do
+defmodule RelaxedProcessesSpawner do
   @doc """
   Module for generating workers that will be using the HordeSupervisor and Registry
   """
@@ -45,3 +45,5 @@ defmodule StressTest do
     |> round()
   end
 end
+
+# RelaxedProcessesSpawner.perform(20,2)

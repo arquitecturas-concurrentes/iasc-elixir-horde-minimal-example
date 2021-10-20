@@ -9,20 +9,22 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
 
   def child_spec(id, seconds_to_sleep) do
     %{
-      id: id,
+      id: get_process_name_from_number(id),
       start: {__MODULE__, :start_link, [id, seconds_to_sleep]},
       restart: :transient,
     }
   end
 
   def start_link(identifier, seconds_to_sleep) do
-    Horde.Registry.register(HordeRegistry, identifier, nil)
-    GenServer.start_link(__MODULE__, {identifier, seconds_to_sleep}, name: String.to_atom("sleepp#{identifier}"))
+    name =  get_process_name_from_number(identifier)
+    GenServer.start_link(__MODULE__, {identifier, seconds_to_sleep, name}, name: name)
   end
 
   @impl GenServer
-  def init({id, timeout}) do
+  def init({id, timeout, name}) do
     Logger.info("scheduling for #{timeout}ms")
+
+    register_process(name)
 
     Process.send_after(self(), :execute, timeout)
 
@@ -38,7 +40,23 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
   @impl GenServer
   def handle_info(:terminate, {id, timeout}) do
     Logger.info("process #{id} Finishing.")
-    {:stop, :normal, {id, timeout}}
+    {:noreply, {id, timeout}}
+    #{:stop, :normal, {id, timeout}}
+  end
+
+  def whereis_identifier(id) do
+    get_process_name_from_number(id)
+    |> whereis
+  end
+
+  def whereis(name) do
+    name
+    |> via_tuple()
+    |> GenServer.whereis()
+  end
+
+  defp register_process(name) do
+    Horde.Registry.register(HordeRegistry, name, self())
   end
 
   defp execute(seconds_to_sleep) do
@@ -46,20 +64,18 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
 
     Logger.info("#{__MODULE__} #{inspect(self())} - Starting to sleep.")
 
-    Process.sleep(seconds_to_sleep * 1000)
+    #Process.sleep(seconds_to_sleep * 1000)
   
     Logger.info("#{__MODULE__} #{inspect(self())} - Generating Random number ->> #{random}.")
 
     Process.send_after(self(), :terminate, seconds_to_sleep)
   end
 
-  # def whereis(name \\ PongWorker) do
-  #   name
-  #   |> via_tuple()
-  #   |> GenServer.whereis()
-  # end
+  defp get_process_name_from_number(id) do
+    String.to_atom("relaxed-#{id}")
+  end
 
-  # def via_tuple(name) do
-  #   {:via, Horde.Registry, {HordeRegistry, name}}
-  # end
+  def via_tuple(name) do
+    {:via, Horde.Registry, {HordeRegistry, name}}
+  end
 end

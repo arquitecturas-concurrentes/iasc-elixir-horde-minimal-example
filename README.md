@@ -1,6 +1,6 @@
 # IascElixirHordeMinimalExample
 
-**TODO: Add description**
+**Small example using Horde**
 
 ## Installation
 

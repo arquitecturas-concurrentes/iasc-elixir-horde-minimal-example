@@ -5,7 +5,7 @@ defmodule StressTest do
   use GenServer
   require Logger
 
-  alias IascElixirHordeMinimalExample.{SleepTask, HordeSupervisor}
+  alias IascElixirHordeMinimalExample.{SleepProcess, HordeSupervisor}
 
   @doc """
 
@@ -31,26 +31,16 @@ defmodule StressTest do
   end
 
   def handle_continue(:start_processes, {number, seconds_to_live}) do
-    seconds_with_jitter =
-      (seconds_to_live * 0.55 + :rand.uniform(seconds_to_live) / 2)
-      |> round()
-
-    Horde.DynamicSupervisor.start_child(HordeSupervisor, %{
-      id: number,
-      restart: :transient,
-      start: {
-        Task,
-        :start,
-        [
-          SleepTask,
-          :start_execution,
-          [number, seconds_with_jitter]
-        ]
-      }
-    })
+    child_spec = SleepProcess.child_spec(number, seconds_with_jitter(seconds_to_live))
+    HordeSupervisor.start_child(child_spec)
 
     Logger.info("started process #{number}")
 
     {:noreply, {number - 1, seconds_to_live}, {:continue, :start_processes}}
+  end
+
+  defp seconds_with_jitter(seconds_to_live) do
+    (seconds_to_live * 0.55 + :rand.uniform(seconds_to_live) / 2)
+    |> round()
   end
 end

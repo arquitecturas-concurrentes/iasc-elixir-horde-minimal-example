@@ -1,6 +1,6 @@
 defmodule RelaxedProcessesSpawner do
   @doc """
-  Module for generating workers that will be using the HordeSupervisor and Registry
+    Module for generating workers that will be using the HordeSupervisor and Registry
   """
   use GenServer
   require Logger
@@ -9,27 +9,36 @@ defmodule RelaxedProcessesSpawner do
   alias IascElixirHordeMinimalExample.{SleepProcess}
 
   @doc """
-
+    Function to spawn n SleepProcess that will after some seconds, generate a random number
   """
-  def perform(number, seconds_to_live) do
-    start_link({number, seconds_to_live})
+  def perform(number, ttl) do
+    start_link({number, ttl})
+  end
+
+  def stress_them(number) do
+    for x <- 0..number do 
+      pid = SleepProcess.whereis_identifier(x)
+      if pid do
+        send(pid, :stress)
+      end
+    end
   end
 
   def stop(number) do
     for x <- 0..number do 
-      pid = IascElixirHordeMinimalExample.SleepProcess.whereis_identifier(x)
+      pid = SleepProcess.whereis_identifier(x)
       if pid do
         send(pid, :terminate)
       end
     end
   end
 
-  def start_link({number, seconds_to_live}) do
-    GenServer.start_link(__MODULE__, {number, seconds_to_live})
+  def start_link({number, ttl}) do
+    GenServer.start_link(__MODULE__, {number, ttl})
   end
 
-  def init({number, seconds_to_live}) do
-    {:ok, {number, seconds_to_live}, {:continue, :start_processes}}
+  def init({number, ttl}) do
+    {:ok, {number, ttl}, {:continue, :start_processes}}
   end
 
   @doc """
@@ -40,17 +49,17 @@ defmodule RelaxedProcessesSpawner do
     {:stop, :normal, nil}
   end
 
-  def handle_continue(:start_processes, {number, seconds_to_live}) do
-    child_spec = SleepProcess.child_spec(number, seconds_with_jitter(seconds_to_live))
+  def handle_continue(:start_processes, {number, ttl}) do
+    child_spec = SleepProcess.child_spec(number, seconds_with_jitter(ttl))
     HordeSupervisor.start_child(child_spec)
 
     Logger.info("started process #{number}")
 
-    {:noreply, {number - 1, seconds_to_live}, {:continue, :start_processes}}
+    {:noreply, {number - 1, ttl}, {:continue, :start_processes}}
   end
 
-  defp seconds_with_jitter(seconds_to_live) do
-    (seconds_to_live * 0.55 + :rand.uniform(seconds_to_live) / 2)
+  defp seconds_with_jitter(ttl) do
+    (ttl * 0.55 + :rand.uniform(ttl) / 2)
     |> round()
   end
 end

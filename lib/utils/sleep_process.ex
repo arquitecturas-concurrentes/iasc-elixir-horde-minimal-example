@@ -43,6 +43,13 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
     {:stop, :normal, {id, timeout}}
   end
 
+  @impl GenServer
+  def handle_info(:stress, {id, timeout}) do
+    execute(1)
+    Process.send_later(self(), :stress, timeout)
+    {:noreply, {id, timeout}}
+  end
+
   def whereis_identifier(id) do
     get_process_name_from_number(id)
     |> whereis
@@ -53,6 +60,12 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
     |> via_tuple()
     |> GenServer.whereis()
   end
+
+  def via_tuple(name) do
+    {:via, Horde.Registry, {HordeRegistry, name}}
+  end
+
+  # --- Private functions --- #
 
   defp register_process(name) do
     Horde.Registry.register(HordeRegistry, name, self())
@@ -70,9 +83,5 @@ defmodule IascElixirHordeMinimalExample.SleepProcess do
 
   defp get_process_name_from_number(id) do
     String.to_atom("relaxed-#{id}")
-  end
-
-  def via_tuple(name) do
-    {:via, Horde.Registry, {HordeRegistry, name}}
   end
 end

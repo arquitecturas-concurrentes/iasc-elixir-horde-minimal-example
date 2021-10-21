@@ -1,4 +1,4 @@
-defmodule IascElixirHordeMinimalExample.HordeSupervisor do
+defmodule CustomIASC.HordeSupervisor do
   use Horde.DynamicSupervisor
 
   def start_link(_) do

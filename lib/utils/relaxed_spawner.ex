@@ -1,17 +1,27 @@
-defmodule StressTest do
+defmodule RelaxedProcessesSpawner do
   @doc """
   Module for generating workers that will be using the HordeSupervisor and Registry
   """
   use GenServer
   require Logger
 
-  alias IascElixirHordeMinimalExample.{SleepTask, HordeSupervisor}
+  alias CustomIASC.{HordeSupervisor}
+  alias IascElixirHordeMinimalExample.{SleepProcess}
 
   @doc """
 
   """
   def perform(number, seconds_to_live) do
     start_link({number, seconds_to_live})
+  end
+
+  def stop(number) do
+    for x <- 0..number do 
+      pid = IascElixirHordeMinimalExample.SleepProcess.whereis_identifier(x)
+      if pid do
+        send(pid, :terminate)
+      end
+    end
   end
 
   def start_link({number, seconds_to_live}) do
@@ -31,26 +41,19 @@ defmodule StressTest do
   end
 
   def handle_continue(:start_processes, {number, seconds_to_live}) do
-    seconds_with_jitter =
-      (seconds_to_live * 0.55 + :rand.uniform(seconds_to_live) / 2)
-      |> round()
-
-    Horde.DynamicSupervisor.start_child(HordeSupervisor, %{
-      id: number,
-      restart: :transient,
-      start: {
-        Task,
-        :start,
-        [
-          SleepTask,
-          :start_execution,
-          [number, seconds_with_jitter]
-        ]
-      }
-    })
+    child_spec = SleepProcess.child_spec(number, seconds_with_jitter(seconds_to_live))
+    HordeSupervisor.start_child(child_spec)
 
     Logger.info("started process #{number}")
 
     {:noreply, {number - 1, seconds_to_live}, {:continue, :start_processes}}
   end
+
+  defp seconds_with_jitter(seconds_to_live) do
+    (seconds_to_live * 0.55 + :rand.uniform(seconds_to_live) / 2)
+    |> round()
+  end
 end
+
+# RelaxedProcessesSpawner.perform(20,2)
+# RelaxedProcessesSpawner.stop(20)

@@ -64,5 +64,5 @@ defmodule RelaxedProcessesSpawner do
   end
 end
 
-# RelaxedProcessesSpawner.perform(20,2)
+# RelaxedProcessesSpawner.perform(20,12)
 # RelaxedProcessesSpawner.stop(20)

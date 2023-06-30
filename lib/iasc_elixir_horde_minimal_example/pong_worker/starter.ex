@@ -21,7 +21,7 @@ defmodule IascElixirHordeMinimalExample.PongWorker.Starter do
   def start_link(opts) do
     name =
       opts
-      |> Keyword.get(:name, PongWorker)
+      |> Keyword.get(:name, Elixir.PongWorker)
       |> via_tuple()
 
     opts = Keyword.put(opts, :name, name)

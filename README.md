@@ -98,7 +98,8 @@ from any node in the cluster. This will work, but there is a nicer approach. We 
 
 ```elixir
 tuple = IascElixirHordeMinimalExample.PongWorker.Starter.via_tuple(PongWorker)
-# {:via, Horde.Registry, {IascElixirHordeMinimalExample.HordeRegistry, PongWorker}}
+# {:via, Horde.Registry, {HordeRegistry, Elixir.PongWorker}}
+# {:via, Horde.Registry, {IascElixirHordeMinimalExample.HordeRegistry, Elixir.PongWorker}}
 pid = GenServer.whereis(tuple)
 GenServer.call(pid, :ping)
 ```

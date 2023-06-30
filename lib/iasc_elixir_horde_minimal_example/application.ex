@@ -11,9 +11,7 @@ defmodule IascElixirHordeMinimalExample.Application do
       {Cluster.Supervisor, [topologies(), [name: MinimalExample.ClusterSupervisor]]},
       CustomIASC.HordeRegistry,
       CustomIASC.HordeSupervisor,
-      CustomIASC.NodeObserver.Supervisor,
-      { IascElixirHordeMinimalExample.PongWorker.Starter,
-      [name: IascElixirHordeMinimalExample.PongWorker, timeout: :timer.seconds(10)]}
+      CustomIASC.NodeObserver.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html for other strategies and supported options

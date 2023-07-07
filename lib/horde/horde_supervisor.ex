@@ -1,11 +1,7 @@
 defmodule CustomIASC.HordeSupervisor do
   use Horde.DynamicSupervisor
 
-  def start_link(_) do
-    opts = [
-      strategy: :one_for_one,
-      distribution_strategy: Horde.UniformQuorumDistribution
-    ]
+  def start_link(opts) do
     Horde.DynamicSupervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
@@ -19,7 +15,7 @@ defmodule CustomIASC.HordeSupervisor do
     Horde.DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 
-  defp members() do
-    Enum.map([Node.self() | Node.list()], &{__MODULE__, &1})
+  defp members do
+    Enum.map(Node.list([:this, :visible]), &{__MODULE__, &1})
   end
 end

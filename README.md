@@ -39,11 +39,11 @@ an example that will spawn 20 `SleepProcess` with 20 seconds of ttl is with the 
 
 ```elixir
 n = 20
-RelaxedProcessesSpawner.perform(n, 20) #will create 20 Relaxed Process and then just make them wait 20 secs to generate a random number
-RelaxedProcessesSpawner.stress(n)
+RelaxedProcessesSpawner.start_link_create(n, 20) #will create 20 Relaxed Process and then just make them wait 20 secs to generate a random number
+RelaxedProcessesSpawner.start_link_stress_them(n)
 
 ## Run this to terminate them
-RelaxedProcessesSpawner.stop(20)
+RelaxedProcessesSpawner.start_link_stop(20)
 ```
 
 ### What's Horde?
@@ -73,13 +73,13 @@ With a normal application, you would name your processes (which is called “reg
 For the example we have on this minimal example it'd be something like:
 
 ```elixir
-GenServer.call(IascElixirHordeMinimalExample.PongWorker, :ping)
+GenServer.call(PongWorker, :ping)
 ```
 
 But this mechanism is scoped to a single node. If you know where a process is running, then you can just pass the node where this process is currently in an extra argument:
 
 ```elixir
-GenServer.call({IascElixirHordeMinimalExample.PongWorker, node}, :ping)
+GenServer.call({PongWorker, node}, :ping)
 ```
 
 But the main issue lies on that we need to know where Horde is going to spawn our `PongWorker` process, also, Horde starts the new process on a random node, o how can you know which node your process is running on to address it with `{name, node}`? The answer is: we need to use `Horde.Registry`.

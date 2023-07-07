@@ -40,7 +40,7 @@ an example that will spawn 20 `SleepProcess` with 20 seconds of ttl is with the 
 ```elixir
 n = 20
 RelaxedProcessesSpawner.start_link_create(n, 20) #will create 20 Relaxed Process and then just make them wait 20 secs to generate a random number
-RelaxedProcessesSpawner.  def start_link_stress_them(n)
+RelaxedProcessesSpawner.start_link_stress_them(n)
 
 ## Run this to terminate them
 RelaxedProcessesSpawner.start_link_stop(20)

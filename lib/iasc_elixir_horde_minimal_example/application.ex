@@ -10,6 +10,7 @@ defmodule IascElixirHordeMinimalExample.Application do
     children = [
       {Cluster.Supervisor, [topologies(), [name: MinimalExample.ClusterSupervisor]]},
       CustomIASC.HordeRegistry,
+      # https://hexdocs.pm/horde/Horde.UniformQuorumDistribution.html
       {CustomIASC.HordeSupervisor, [strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :active]},
       CustomIASC.NodeObserver.Supervisor
     ]

@@ -2,7 +2,7 @@ defmodule RelaxedProcessesSpawner do
   @doc """
     Module for generating workers that will be using the HordeSupervisor and Registry
   """
-  use GenServer
+  use Task
   require Logger
 
   alias CustomIASC.{HordeSupervisor}
@@ -11,8 +11,16 @@ defmodule RelaxedProcessesSpawner do
   @doc """
     Function to spawn n SleepProcess that will after some seconds, generate a random number
   """
-  def perform(number, ttl) do
-    start_link({number, ttl})
+  def start_link_create(number, ttl) do
+    Task.start_link(__MODULE__, :create_process, [number, ttl])
+  end
+
+  def start_link_stress_them(number) do
+    Task.start_link(__MODULE__, :stress_them, [number])
+  end
+
+  def start_link_stop(number) do
+    Task.start_link(__MODULE__, :stop, [number])
   end
 
   def stress_them(number) do
@@ -33,29 +41,13 @@ defmodule RelaxedProcessesSpawner do
     end
   end
 
-  def start_link({number, ttl}) do
-    GenServer.start_link(__MODULE__, {number, ttl})
-  end
-
-  def init({number, ttl}) do
-    {:ok, {number, ttl}, {:continue, :start_processes}}
-  end
-
-  @doc """
-  handle_continue :start_processes to be called only when the number status has reached 0. Stop this process normally.
-  """
-  def handle_continue(:start_processes, {0, _}) do
-    Logger.info("Shutting down this stress test process #{inspect(self())}.")
-    {:stop, :normal, nil}
-  end
-
-  def handle_continue(:start_processes, {number, ttl}) do
-    child_spec = SleepProcess.child_spec(number, seconds_with_jitter(ttl))
-    HordeSupervisor.start_child(child_spec)
-
-    Logger.info("started process #{number}")
-
-    {:noreply, {number - 1, ttl}, {:continue, :start_processes}}
+  def create_process(process_number, ttl) do
+    for number <- 0..process_number do 
+      child_spec = SleepProcess.child_spec(number, seconds_with_jitter(ttl))
+      HordeSupervisor.start_child(child_spec)
+  
+      Logger.info("started process #{number}")
+    end
   end
 
   defp seconds_with_jitter(ttl) do
@@ -64,5 +56,5 @@ defmodule RelaxedProcessesSpawner do
   end
 end
 
-# RelaxedProcessesSpawner.perform(20,12)
-# RelaxedProcessesSpawner.stop(20)
+# RelaxedProcessesSpawner.start_link_create(20,12)
+# RelaxedProcessesSpawner.start_link_stop(20)

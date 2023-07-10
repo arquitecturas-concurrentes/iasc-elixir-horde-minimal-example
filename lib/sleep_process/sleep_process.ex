@@ -1,4 +1,4 @@
-defmodule IascElixirHordeMinimalExample.SleepProcess do
+defmodule IascHordeExample.SleepProcess do
   @moduledoc """
   Module which generates only a random number.
   """

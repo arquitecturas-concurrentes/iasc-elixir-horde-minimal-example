@@ -1,4 +1,4 @@
-defmodule IascElixirHordeMinimalExample.PongWorker.Starter do
+defmodule IascHordeExample.PongWorker.Starter do
   @moduledoc """
   Module in charge of starting and monitoring  the `PongWorker`
   process, restarting it when necessary.
@@ -6,7 +6,7 @@ defmodule IascElixirHordeMinimalExample.PongWorker.Starter do
   require Logger
 
   alias CustomIASC.{HordeRegistry, HordeSupervisor}
-  alias IascElixirHordeMinimalExample.{PongWorker}
+  alias IascHordeExample.{PongWorker}
 
   def child_spec(opts) do
     %{

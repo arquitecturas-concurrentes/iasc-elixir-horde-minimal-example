@@ -6,7 +6,7 @@ defmodule RelaxedProcessesSpawner do
   require Logger
 
   alias CustomIASC.{HordeSupervisor}
-  alias IascElixirHordeMinimalExample.{SleepProcess}
+  alias IascHordeExample.{SleepProcess}
 
   @doc """
     Function to spawn n SleepProcess that will after some seconds, generate a random number

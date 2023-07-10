@@ -1,8 +1,8 @@
-defmodule IascElixirHordeMinimalExampleTest do
+defmodule IascHordeExampleTest do
   use ExUnit.Case
-  doctest IascElixirHordeMinimalExample
+  doctest IascHordeExample
 
   test "greets the world" do
-    assert IascElixirHordeMinimalExample.hello() == :world
+    assert IascHordeExample.hello() == :world
   end
 end

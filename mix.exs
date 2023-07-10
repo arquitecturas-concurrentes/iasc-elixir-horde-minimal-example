@@ -1,4 +1,4 @@
-defmodule IascElixirHordeMinimalExample.MixProject do
+defmodule IascHordeExample.MixProject do
   use Mix.Project
 
   def project do
@@ -15,7 +15,7 @@ defmodule IascElixirHordeMinimalExample.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {IascElixirHordeMinimalExample.Application, []}
+      mod: {IascHordeExample.Application, []}
     ]
   end
 

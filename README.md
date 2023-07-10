@@ -1,4 +1,4 @@
-# IascElixirHordeMinimalExample
+# IascHordeExample
 
 **Small example using Horde**
 
@@ -97,9 +97,9 @@ Horde.Registry.lookup(registry, :foo)
 from any node in the cluster. This will work, but there is a nicer approach. We just can use the `via_tuple` in order to get a tuple that will be used to know exactly the process is found and then just call it, once we have its id, it's going to be as calling a process on the cluster. 
 
 ```elixir
-tuple = IascElixirHordeMinimalExample.PongWorker.Starter.via_tuple(PongWorker)
+tuple = IascHordeExample.PongWorker.Starter.via_tuple(PongWorker)
 # {:via, Horde.Registry, {HordeRegistry, Elixir.PongWorker}}
-# {:via, Horde.Registry, {IascElixirHordeMinimalExample.HordeRegistry, Elixir.PongWorker}}
+# {:via, Horde.Registry, {IascHordeExample.HordeRegistry, Elixir.PongWorker}}
 pid = GenServer.whereis(tuple)
 GenServer.call(pid, :ping)
 ```

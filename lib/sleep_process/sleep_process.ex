@@ -10,7 +10,8 @@ defmodule IascHordeExample.SleepProcess do
   def child_spec(id, seconds_to_sleep) do
     %{
       id: get_process_name_from_number(id),
-      start: {__MODULE__, :start_link, [id, seconds_to_sleep]},
+      start: {__MODULE__, :start_link,
+      [id, seconds_to_sleep]},
       restart: :transient,
     }
   end
@@ -26,7 +27,7 @@ defmodule IascHordeExample.SleepProcess do
 
     register_process(name)
 
-    Process.send_after(self(), :execute, timeout)
+    Process.send_after(self(), :execute, timeout, [])
 
     {:ok, {id, timeout}}
   end
@@ -43,10 +44,17 @@ defmodule IascHordeExample.SleepProcess do
     {:stop, :normal, {id, timeout}}
   end
 
+    @impl GenServer
+  def handle_info(:end_with_error, {id, timeout}) do
+    Logger.info("process #{id} Erroring.")
+    _a = 1/0
+    {:noreply, {id, timeout}}
+  end
+
   @impl GenServer
   def handle_info(:stress, {id, timeout}) do
     execute(1)
-    Process.send_later(self(), :stress, timeout)
+    Process.send_after(self(), :stress, timeout, [])
     {:noreply, {id, timeout}}
   end
 
@@ -77,7 +85,7 @@ defmodule IascHordeExample.SleepProcess do
     Logger.info("#{__MODULE__} #{inspect(self())} - Starting to sleep.")
 
     Process.sleep(seconds_to_sleep * 1000)
-  
+
     Logger.info("#{__MODULE__} #{inspect(self())} - Generating Random number ->> #{random}.")
   end
 
@@ -85,3 +93,8 @@ defmodule IascHordeExample.SleepProcess do
     String.to_atom("relaxed-#{id}")
   end
 end
+
+
+# pid = IascHordeExample.SleepProcess.whereis_identifier(1)
+# send pid, :end_with_error
+# send pid, :terminate

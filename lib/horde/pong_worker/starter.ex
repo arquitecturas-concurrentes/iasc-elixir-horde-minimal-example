@@ -3,8 +3,6 @@ defmodule IascHordeExample.PongWorker.Starter do
   Module in charge of starting and monitoring  the `PongWorker`
   process, restarting it when necessary.
   """
-  require Logger
-
   alias CustomIASC.{HordeRegistry, HordeSupervisor}
   alias IascHordeExample.{PongWorker}
 

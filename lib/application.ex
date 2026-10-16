@@ -9,9 +9,16 @@ defmodule IascHordeExample.Application do
   def start(_type, _args) do
     children = [
       {Cluster.Supervisor, [topologies(), [name: MinimalExample.ClusterSupervisor]]}, #libcluster
+
       CustomIASC.HordeRegistry, # horde registry
       # https://hexdocs.pm/horde/Horde.UniformQuorumDistribution.html
-      {CustomIASC.HordeSupervisor, [strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :active]},
+      {CustomIASC.HordeSupervisor,
+        [strategy: :one_for_one,
+        distribution_strategy: Horde.UniformQuorumDistribution,
+        process_redistribution: :active
+      ]
+        },
+
       CustomIASC.NodeObserver.Supervisor # node supervisor. Not from Horde
     ]
 
@@ -21,10 +28,11 @@ defmodule IascHordeExample.Application do
   end
 
   defp topologies do
-    # https://hexdocs.pm/libcluster/Cluster.Strategy.Gossip.html
+    # https://hexdocs.pm/libcluster/Cluster.Strategy.Epmd.html
     [
       horde_minimal_example: [
-        strategy: Cluster.Strategy.Gossip
+        strategy: Cluster.Strategy.Epmd,
+        config: [hosts: [:node1@altair]],
       ]
     ]
   end
